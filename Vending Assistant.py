@@ -69,7 +69,7 @@ def say(text, language):
         print("Translation or audio conversion error:", e)
 
 
-def readLine(line, characters):
+def readKeypad(line, characters):
     GPIO.output(line, GPIO.HIGH)
     if GPIO.input(C1) == 1:
         return characters[0]
@@ -86,10 +86,10 @@ def selectInputMethod():
     say("How would you like to vend your product? Two options - by voice or by manual selection", "en")
     say("Press star to use keypad or press # to use voice for further process", "en")
     while True:
-        if readLine(L4, ["*", "0", "#", "D"]) == "*":
+        if readKeypad(L4, ["*", "0", "#", "D"]) == "*":
             say("Thank you for selecting Keypad", "en")
             return "Manual"
-        elif readLine(L4, ["*", "0", "#", "D"]) == "#":
+        elif readKeypad(L4, ["*", "0", "#", "D"]) == "#":
             say("Thank you for selecting Voice", "en")
             return "voice"
 
@@ -106,17 +106,17 @@ def selectLanguageKeypad():
     say("Press D for Malayalam", "ml")
     time.sleep(1)
     while True:
-        # call the readLine function for each row of the keypad
-        if readLine(L1, ["1", "2", "3", "A"]) == "A":
+        # call the readKeypad function for each row of the keypad
+        if readKeypad(L1, ["1", "2", "3", "A"]) == "A":
             say("Thankyou for selecting Hindi", "hi")
             return "hi"
-        elif readLine(L2, ["4", "5", "6", "B"]) == "B":
+        elif readKeypad(L2, ["4", "5", "6", "B"]) == "B":
             say("Thankyou for selecting Marathi", "mr")
             return "mr"
-        elif readLine(L3, ["7", "8", "9", "C"]) == "C":
+        elif readKeypad(L3, ["7", "8", "9", "C"]) == "C":
             say("Thankyou for selecting English", "en")
             return "en"
-        elif readLine(L4, ["*", "0", "#", "D"]) == "D":
+        elif readKeypad(L4, ["*", "0", "#", "D"]) == "D":
             say("Thankyou for selecting Malayalam", "ml")
             return "ml"
         time.sleep(0.5)
@@ -150,7 +150,7 @@ def selectLanguageVoice():
         time.sleep(0.5)
 
 
-def say_random_vending_message():
+def welcomeMessages():
     vending_messages = [
         "Powering up! Welcome to the vending experience.",
         "Hello, I'm awake and ready to serve you.",
@@ -176,8 +176,8 @@ def say_random_vending_message():
     return random_message
 
 
-def available_options():
-    available_options = [
+def availableProducts():
+    availableproductsmessages = [
         "Choose: Happident, KitKat, Kurkure, or Lays?",
         "Pick one: Happident, KitKat, Kurkure, or Lays.",
         "Four options: Happident, KitKat, Kurkure, Lays.",
@@ -190,34 +190,34 @@ def available_options():
         "Pick your snack: Happident, KitKat, Kurkure, Lays."
     ]
 
-    random_message = random.choice(available_options)
+    random_message = random.choice(availableproductsmessages)
     return random_message
 
 
-def SelectProduct():
+def selectProductKeypad():
     say("Please Select your Product. \nPress 1 for happydent\nPress 2 for KitKat\nPress 3 for Lays\nPress 4 for Kurkure",
         lang)
     while True:
-        # call the readLine function for each row of the keypad
-        if readLine(L1, ["1", "2", "3", "A"]) == "1":
+        # call the readKeypad function for each row of the keypad
+        if readKeypad(L1, ["1", "2", "3", "A"]) == "1":
             say("You selected happydent", lang)
             return "happydent"
-        elif readLine(L1, ["1", "2", "3", "A"]) == "2":
+        elif readKeypad(L1, ["1", "2", "3", "A"]) == "2":
             say("You selected KitKat", lang)
             return "kitkat"
-        elif readLine(L1, ["1", "2", "3", "A"]) == "3":
+        elif readKeypad(L1, ["1", "2", "3", "A"]) == "3":
             say("You selected Lays", lang)
             return "Lays"
-        elif readLine(L2, ["4", "5", "6", "B"]) == "4":
+        elif readKeypad(L2, ["4", "5", "6", "B"]) == "4":
             say("You selected Kurkure", lang)
             return "kurkure"
-        elif readLine(L4, ["*", "0", "#", "D"]) == "0":
+        elif readKeypad(L4, ["*", "0", "#", "D"]) == "0":
             say("You selected Kurkure", lang)
             return "keep quiet"
         time.sleep(0.5)
 
 
-def do_the_payment():
+def paymentMethodOptions():
     payment_options = [
         "Coins or UPI? The choice is yours for a tasty treat!",
         "Insert coins or make a quick UPI payment to satisfy your cravings.",
@@ -240,7 +240,7 @@ def do_the_payment():
     return random_message
 
 
-def thanks_for_shopping():
+def thankYouMessages():
     thanks_messages = [
         "Thank you for choosing us for your snack break!",
         "Your satisfaction is our delight. Thanks for shopping with us!",
@@ -446,12 +446,12 @@ def receivedPayments():
 
 
 def keypadVendingMachine():
-    product = SelectProduct()
+    product = selectProductKeypad()
     if "happydent" in str(product).lower():
         print("Recognized text:", product)
         say("Please do the Payment of Happident.", lang)
         time.sleep(3)
-        say(do_the_payment(), lang)
+        say(paymentMethodOptions(), lang)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang)
         while True:
@@ -461,7 +461,7 @@ def keypadVendingMachine():
                     lang)
                 time.sleep(10)
                 Happident()
-                say(thanks_for_shopping(), lang)
+                say(thankYouMessages(), lang)
                 time.sleep(15)
                 break
             else:
@@ -472,7 +472,7 @@ def keypadVendingMachine():
         print("Recognized text:", product)
         say("Please do the Payment of kitkat.", lang)
         time.sleep(3)
-        say(do_the_payment(), lang)
+        say(paymentMethodOptions(), lang)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang)
         while True:
@@ -482,7 +482,7 @@ def keypadVendingMachine():
                     lang)
                 time.sleep(10)
                 Kitkat()
-                say(thanks_for_shopping(), lang)
+                say(thankYouMessages(), lang)
                 time.sleep(15)
                 break
             else:
@@ -493,7 +493,7 @@ def keypadVendingMachine():
         print("Recognized text:", product)
         say("Please do the Payment of kurkure.", lang)
         time.sleep(3)
-        say(do_the_payment(), lang)
+        say(paymentMethodOptions(), lang)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang)
         while True:
@@ -503,7 +503,7 @@ def keypadVendingMachine():
                     lang)
                 time.sleep(10)
                 kurkure()
-                say(thanks_for_shopping(), lang)
+                say(thankYouMessages(), lang)
                 time.sleep(15)
                 break
             else:
@@ -514,7 +514,7 @@ def keypadVendingMachine():
         print("Recognized text:", product)
         say("Please do the Payment of Lays.", lang)
         time.sleep(3)
-        say(do_the_payment(), lang)
+        say(paymentMethodOptions(), lang)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang)
         while True:
@@ -524,7 +524,7 @@ def keypadVendingMachine():
                     lang)
                 time.sleep(10)
                 Lays()
-                say(thanks_for_shopping(), lang)
+                say(thankYouMessages(), lang)
                 time.sleep(15)
                 break
             else:
@@ -546,7 +546,7 @@ def voiceVendingMachine():
         print("Recognized text:", command)
         say("Please do the Payment of Happident.", lang1)
         time.sleep(3)
-        say(do_the_payment(), lang1)
+        say(paymentMethodOptions(), lang1)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang1)
         while True:
@@ -556,7 +556,7 @@ def voiceVendingMachine():
                     lang1)
                 time.sleep(10)
                 Happident()
-                say(thanks_for_shopping(), lang1)
+                say(thankYouMessages(), lang1)
                 time.sleep(15)
                 break
             else:
@@ -567,7 +567,7 @@ def voiceVendingMachine():
         print("Recognized text:", command)
         say("Please do the Payment of kitkat.", lang1)
         time.sleep(3)
-        say(do_the_payment(), lang1)
+        say(paymentMethodOptions(), lang1)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang1)
         while True:
@@ -577,7 +577,7 @@ def voiceVendingMachine():
                     lang1)
                 time.sleep(10)
                 Kitkat()
-                say(thanks_for_shopping(), lang1)
+                say(thankYouMessages(), lang1)
                 time.sleep(15)
                 break
             else:
@@ -588,7 +588,7 @@ def voiceVendingMachine():
         print("Recognized text:", command)
         say("Please do the Payment of kurkure.", lang1)
         time.sleep(3)
-        say(do_the_payment(), lang1)
+        say(paymentMethodOptions(), lang1)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang1)
         while True:
@@ -598,7 +598,7 @@ def voiceVendingMachine():
                     lang1)
                 time.sleep(10)
                 kurkure()
-                say(thanks_for_shopping(), lang1)
+                say(thankYouMessages(), lang1)
                 time.sleep(15)
                 break
             else:
@@ -609,7 +609,7 @@ def voiceVendingMachine():
         print("Recognized text:", command)
         say("Please do the Payment of Lays.", lang1)
         time.sleep(3)
-        say(do_the_payment(), lang1)
+        say(paymentMethodOptions(), lang1)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang1)
         while True:
@@ -619,7 +619,7 @@ def voiceVendingMachine():
                     lang1)
                 time.sleep(10)
                 Lays()
-                say(thanks_for_shopping(), lang1)
+                say(thankYouMessages(), lang1)
                 time.sleep(15)
                 break
             else:
@@ -641,7 +641,7 @@ try:
     inputMethod = selectInputMethod()
     if inputMethod == "Manual":
         lang = selectLanguageKeypad()
-        say(say_random_vending_message(), lang)
+        say(welcomeMessages(), lang)
         time.sleep(2)
         while True:
             keypadVendingMachine()
@@ -649,14 +649,13 @@ try:
 
     elif inputMethod == "voice":
         lang1 = selectLanguageVoice()
-        say(say_random_vending_message(), lang1)
+        say(welcomeMessages(), lang1)
         time.sleep(2)
-        say(available_options(), lang1)
+        say(availableProducts(), lang1)
         time.sleep(2)
         while True:
             voiceVendingMachine()
             continue
-
 except TypeError:
     if inputMethod == "Manual":
         say("Did not recognise what you said.", lang)
@@ -664,4 +663,3 @@ except TypeError:
         say("Did not recognise what you said.", lang1)
     time.sleep(5)
 
-time.sleep(10)
