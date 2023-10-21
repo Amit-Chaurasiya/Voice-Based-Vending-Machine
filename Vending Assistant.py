@@ -21,9 +21,6 @@ C2 = 16
 C3 = 20
 C4 = 21
 
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
-
 GPIO.setup(L1, GPIO.OUT)
 GPIO.setup(L2, GPIO.OUT)
 GPIO.setup(L3, GPIO.OUT)
@@ -70,6 +67,8 @@ def say(text, language):
 
 
 def readKeypad(line, characters):
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM)
     GPIO.output(line, GPIO.HIGH)
     if GPIO.input(C1) == 1:
         return characters[0]
@@ -284,22 +283,12 @@ def recognize_speech():
 
 
 def Happident():
-    GPIO.setmode(GPIO.BOARD)
-
-    # Set up GPIO pin 11 as an output
-    servo_pin = 11
+    servo_pin = 2
     GPIO.setup(servo_pin, GPIO.OUT)
-
-    # Create a PWM instance with a frequency of 50 Hz
     pwm = GPIO.PWM(servo_pin, 50)
-
-    # Start PWM with a duty cycle of 7.5% (neutral position)
     pwm.start(7.5)
-    # say("You Selected Happident")
-
     try:
         for _ in range(1):
-            # Move the servo to different positions
             pwm.ChangeDutyCycle(2.5)  # 0 degrees
             time.sleep(1)
             pwm.ChangeDutyCycle(7.5)  # 90 degrees (neutral position)
@@ -307,27 +296,16 @@ def Happident():
             pwm.ChangeDutyCycle(12.5)  # 180 degrees
             time.sleep(1)
     finally:
-        # Clean up GPIO settings
         pwm.stop()
-        GPIO.cleanup()
 
 
 def Kitkat():
-    GPIO.setmode(GPIO.BOARD)
-
-    # Set up GPIO pin 12 as an output
-    servo_pin = 12
+    servo_pin = 3
     GPIO.setup(servo_pin, GPIO.OUT)
-
-    # Create a PWM instance with a frequency of 50 Hz
     pwm = GPIO.PWM(servo_pin, 50)
-
-    # Start PWM with a duty cycle of 7.5% (neutral position)
     pwm.start(7.5)
-
     try:
         for _ in range(1):
-            # Move the servo to different positions
             pwm.ChangeDutyCycle(2.5)  # 0 degrees
             time.sleep(1)
             pwm.ChangeDutyCycle(7.5)  # 90 degrees (neutral position)
@@ -335,28 +313,16 @@ def Kitkat():
             pwm.ChangeDutyCycle(12.5)  # 180 degrees
             time.sleep(1)
     finally:
-        # Clean up GPIO settings
         pwm.stop()
-        GPIO.cleanup()
 
 
 def kurkure():
-    GPIO.setmode(GPIO.BOARD)
-
-    # Set up GPIO pin 13 as an output
-    servo_pin = 13
+    servo_pin = 4
     GPIO.setup(servo_pin, GPIO.OUT)
-
-    # Create a PWM instance with a frequency of 50 Hz
     pwm = GPIO.PWM(servo_pin, 50)
-
-    # Start PWM with a duty cycle of 7.5% (neutral position)
     pwm.start(7.5)
-    # say("You Selected Chocolate")
-
     try:
         for _ in range(1):
-            # Move the servo to different positions
             pwm.ChangeDutyCycle(2.5)  # 0 degrees
             time.sleep(1)
             pwm.ChangeDutyCycle(7.5)  # 90 degrees (neutral position)
@@ -364,28 +330,16 @@ def kurkure():
             pwm.ChangeDutyCycle(12.5)  # 180 degrees
             time.sleep(1)
     finally:
-        # Clean up GPIO settings
         pwm.stop()
-        GPIO.cleanup()
 
 
 def Lays():
-    GPIO.setmode(GPIO.BOARD)
-
-    # Set up GPIO pin 15 as an output
-    servo_pin = 15
+    servo_pin = 14
     GPIO.setup(servo_pin, GPIO.OUT)
-
-    # Create a PWM instance with a frequency of 50 Hz
     pwm = GPIO.PWM(servo_pin, 50)
-
-    # Start PWM with a duty cycle of 7.5% (neutral position)
     pwm.start(7.5)
-    # say("You Selected Chocolate")
-
     try:
         for _ in range(1):
-            # Move the servo to different positions
             pwm.ChangeDutyCycle(2.5)  # 0 degrees
             time.sleep(1)
             pwm.ChangeDutyCycle(7.5)  # 90 degrees (neutral position)
@@ -393,9 +347,7 @@ def Lays():
             pwm.ChangeDutyCycle(12.5)  # 180 degrees
             time.sleep(1)
     finally:
-        # Clean up GPIO settings
         pwm.stop()
-        GPIO.cleanup()
 
 
 def receivedPayments():
