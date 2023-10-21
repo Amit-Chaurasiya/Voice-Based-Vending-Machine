@@ -399,7 +399,7 @@ def Lays():
 
 
 def receivedPayments():
-    csvFile = '/home/sies/Desktop/Payment Record/report_2310.csv'
+    csvFile = '/home/siesgst/Desktop/Vending Machine/Reporting_CSV1/report_2310.csv'
     searchWord1 = 'INDBNK'
     colNumber1 = 2
 
