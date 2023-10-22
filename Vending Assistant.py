@@ -415,7 +415,8 @@ def keypadVendingMachine():
                 Happident()
                 say(thankYouMessages(), lang)
                 time.sleep(15)
-                break
+                return "Vended"
+                # break
             else:
                 print("No Payment Received")
                 time.sleep(15)
@@ -436,7 +437,8 @@ def keypadVendingMachine():
                 Kitkat()
                 say(thankYouMessages(), lang)
                 time.sleep(15)
-                break
+                return "Vended"
+                # break
             else:
                 print("No Payment Received")
                 time.sleep(15)
@@ -457,7 +459,8 @@ def keypadVendingMachine():
                 kurkure()
                 say(thankYouMessages(), lang)
                 time.sleep(15)
-                break
+                return "Vended"
+                # break
             else:
                 print("No Payment Received")
                 time.sleep(15)
@@ -478,7 +481,8 @@ def keypadVendingMachine():
                 Lays()
                 say(thankYouMessages(), lang)
                 time.sleep(15)
-                break
+                return "Vended"
+                # break
             else:
                 print("No Payment Received")
                 time.sleep(15)
@@ -510,7 +514,8 @@ def voiceVendingMachine():
                 Happident()
                 say(thankYouMessages(), lang1)
                 time.sleep(15)
-                break
+                # break
+                return "Vended"
             else:
                 print("No Payment Received")
                 time.sleep(15)
@@ -531,7 +536,8 @@ def voiceVendingMachine():
                 Kitkat()
                 say(thankYouMessages(), lang1)
                 time.sleep(15)
-                break
+                # break
+                return "Vended"
             else:
                 print("No Payment Received")
                 time.sleep(15)
@@ -552,7 +558,8 @@ def voiceVendingMachine():
                 kurkure()
                 say(thankYouMessages(), lang1)
                 time.sleep(15)
-                break
+                # break
+                return "Vended"
             else:
                 print("No Payment Received")
                 time.sleep(15)
@@ -573,7 +580,8 @@ def voiceVendingMachine():
                 Lays()
                 say(thankYouMessages(), lang1)
                 time.sleep(15)
-                break
+                # break
+                return "Vended"
             else:
                 print("No Payment Received")
                 time.sleep(15)
@@ -589,28 +597,34 @@ def voiceVendingMachine():
 
 global lang, lang1, inputMethod
 
-try:
-    inputMethod = selectInputMethod()
-    if inputMethod == "Manual":
-        lang = selectLanguageKeypad()
-        say(welcomeMessages(), lang)
-        time.sleep(2)
-        while True:
-            keypadVendingMachine()
-            continue
 
-    elif inputMethod == "voice":
-        lang1 = selectLanguageVoice()
-        say(welcomeMessages(), lang1)
-        time.sleep(2)
-        say(availableProducts(), lang1)
-        time.sleep(2)
-        while True:
-            voiceVendingMachine()
-            continue
-except TypeError:
-    if inputMethod == "Manual":
-        say("Did not recognise what you said.", lang)
-    elif inputMethod == "voice":
-        say("Did not recognise what you said.", lang1)
-    time.sleep(5)
+while True:
+    try:
+        inputMethod = selectInputMethod()
+        if inputMethod == "Manual":
+            lang = selectLanguageKeypad()
+            say(welcomeMessages(), lang)
+            time.sleep(2)
+            while True:
+                if keypadVendingMachine() == "Vended":
+                    break
+                else:
+                    continue
+
+        elif inputMethod == "voice":
+            lang1 = selectLanguageVoice()
+            say(welcomeMessages(), lang1)
+            time.sleep(2)
+            say(availableProducts(), lang1)
+            time.sleep(2)
+            while True:
+                if voiceVendingMachine() == "Vended":
+                    break
+                else:
+                    continue
+    except TypeError:
+        if inputMethod == "Manual":
+            say("Did not recognise what you said.", lang)
+        elif inputMethod == "voice":
+            say("Did not recognise what you said.", lang1)
+        time.sleep(5)
