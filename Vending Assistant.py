@@ -21,6 +21,8 @@ C2 = 16
 C3 = 20
 C4 = 21
 
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
 GPIO.setup(L1, GPIO.OUT)
 GPIO.setup(L2, GPIO.OUT)
 GPIO.setup(L3, GPIO.OUT)
@@ -67,8 +69,6 @@ def say(text, language):
 
 
 def readKeypad(line, characters):
-    GPIO.setwarnings(False)
-    GPIO.setmode(GPIO.BCM)
     GPIO.output(line, GPIO.HIGH)
     if GPIO.input(C1) == 1:
         return characters[0]
@@ -363,8 +363,10 @@ def receivedPayments():
     time_range_end = current_time + timedelta(minutes=10)
 
     # Format time_range_start and time_range_end to display milliseconds
-    formatted_time_range_start = time_range_start.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-    formatted_time_range_end = time_range_end.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+    formatted_time_range_start = time_range_start.strftime(
+        '%Y-%m-%d %H:%M:%S.%f')[:-3]
+    formatted_time_range_end = time_range_end.strftime(
+        '%Y-%m-%d %H:%M:%S.%f')[:-3]
 
     try:
         with open(csvFile, 'r', encoding='utf-8') as csv_file:
@@ -389,8 +391,6 @@ def receivedPayments():
                             # print(date_time, row_data[0], row_data[1], data_12)
                             return True
 
-
-
     except FileNotFoundError:
         print(f"The file '{csvFile}' was not found.")
     except Exception as e:
@@ -409,7 +409,7 @@ def keypadVendingMachine():
         while True:
             if receivedPayments():
                 say("Payment received of Rupees " + str(amount[1])[
-                                                    :-3] + "Happident is being dispensed from the vending Machine. Please collect your Happident",
+                    :-3] + "Happident is being dispensed from the vending Machine. Please collect your Happident",
                     lang)
                 time.sleep(10)
                 Happident()
@@ -430,7 +430,7 @@ def keypadVendingMachine():
         while True:
             if receivedPayments():
                 say("Payment received of Rupees " + str(amount[1])[
-                                                    :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
+                    :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
                     lang)
                 time.sleep(10)
                 Kitkat()
@@ -451,7 +451,7 @@ def keypadVendingMachine():
         while True:
             if receivedPayments():
                 say("Payment received of Rupees " + str(amount[1])[
-                                                    :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
+                    :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
                     lang)
                 time.sleep(10)
                 kurkure()
@@ -472,7 +472,7 @@ def keypadVendingMachine():
         while True:
             if receivedPayments():
                 say("Payment received of Rupees " + str(amount[1])[
-                                                    :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
+                    :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
                     lang)
                 time.sleep(10)
                 Lays()
@@ -504,7 +504,7 @@ def voiceVendingMachine():
         while True:
             if receivedPayments():
                 say("Payment received of Rupees " + str(amount[1])[
-                                                    :-3] + "Happident is being dispensed from the vending Machine. Please collect your Happident",
+                    :-3] + "Happident is being dispensed from the vending Machine. Please collect your Happident",
                     lang1)
                 time.sleep(10)
                 Happident()
@@ -525,7 +525,7 @@ def voiceVendingMachine():
         while True:
             if receivedPayments():
                 say("Payment received of Rupees " + str(amount[1])[
-                                                    :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
+                    :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
                     lang1)
                 time.sleep(10)
                 Kitkat()
@@ -546,7 +546,7 @@ def voiceVendingMachine():
         while True:
             if receivedPayments():
                 say("Payment received of Rupees " + str(amount[1])[
-                                                    :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
+                    :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
                     lang1)
                 time.sleep(10)
                 kurkure()
@@ -567,7 +567,7 @@ def voiceVendingMachine():
         while True:
             if receivedPayments():
                 say("Payment received of Rupees " + str(amount[1])[
-                                                    :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
+                    :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
                     lang1)
                 time.sleep(10)
                 Lays()
@@ -614,4 +614,3 @@ except TypeError:
     elif inputMethod == "voice":
         say("Did not recognise what you said.", lang1)
     time.sleep(5)
-
