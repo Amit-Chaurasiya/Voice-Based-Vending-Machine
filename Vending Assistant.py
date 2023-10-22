@@ -8,8 +8,11 @@ import csv
 from datetime import datetime, timedelta
 import random
 from translate import Translator
+import tkinter as tk
+from PIL import Image, ImageTk
+import qrcode
+import os
 
-# import os
 
 L1 = 25
 L2 = 8
@@ -41,7 +44,7 @@ def say(text, language):
         translation = translator.translate(text)
 
         # Print the translated text
-        print("Translated Text (Hindi):", translation)
+        print("Text: ", translation)
 
         # Convert the translated text to speech in Hindi
         tts = gTTS(text=translation, lang=language)
@@ -211,8 +214,11 @@ def selectProductKeypad():
             say("You selected Kurkure", lang)
             return "kurkure"
         elif readKeypad(L4, ["*", "0", "#", "D"]) == "0":
-            say("You selected Kurkure", lang)
+            say("Vending Machine is Shutting Down", lang)
             return "keep quiet"
+        else:
+            say("No product availabe for that input", lang)
+            return "No"
         time.sleep(0.5)
 
 
@@ -397,13 +403,52 @@ def receivedPayments():
         print(f"An error occurred: {str(e)}")
 
 
+def generate_qr_code(myUPI, file_name):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(myUPI)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    img.save(file_name)
+
+
+def close_window(root, file_name):
+    root.destroy()
+    os.remove(file_name)
+
+
+def open_and_close_qr_code(file_name):
+    root = tk.Tk()
+    root.title("QR Code Viewer")
+
+    qr_code_image = Image.open(file_name)
+    qr_code_photo = ImageTk.PhotoImage(qr_code_image)
+
+    label = tk.Label(root, image=qr_code_photo)
+    label.pack()
+
+    if receivedPayments():
+        root.after(1000, lambda: close_window(root, file_name))
+
+    root.mainloop()
+
+
 def keypadVendingMachine():
     product = selectProductKeypad()
     if "happydent" in str(product).lower():
+        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=10.00&tn=To%20Vending%20Machine%20For%20Happydent&cu=INR"
+
+        qr_code_file_name = "myUPIid(Happydent).png"
+        generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", product)
         say("Please do the Payment of Happident.", lang)
         time.sleep(3)
         say(paymentMethodOptions(), lang)
+        open_and_close_qr_code(qr_code_file_name)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang)
         while True:
