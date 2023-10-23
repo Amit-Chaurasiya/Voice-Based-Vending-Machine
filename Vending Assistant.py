@@ -154,24 +154,11 @@ def selectLanguageVoice():
 
 def welcomeMessages():
     vending_messages = [
-        "Powering up! Welcome to the vending experience.",
-        "Hello, I'm awake and ready to serve you.",
-        "Lights on, snacks ready. Let's get started!",
-        "Vending machine online. What can I get for you?",
-        "The vending magic begins as I come to life.",
-        "I'm all revved up and stocked up – what's your choice?",
-        "Ready to roll! Make your selection, please.",
-        "Let's make snack history together. What's your craving?",
-        "The vending world awaits your selection. Start now!",
-        "I'm here to satisfy your snacking desires. Choose wisely!",
-        "Ready to dispense deliciousness at your command.",
-        "Welcome to snack central! Begin your selection.",
-        "The vending symphony begins. Pick your snack's tune.",
-        "All systems go! Let's embark on a snack adventure.",
-        "I'm here to serve. What will it be today, snack-wise?",
-        "Time to snackify! What's your choice in the spotlight?",
-        "The vending stage is set. Your snack awaits the cue.",
-        "Press a button, and let the snacking spectacle begin!"
+        "Welcome to the vending experience.",
+        "Hello, what do you want to eat today?",
+        "What are you looking forward to eating",
+        "Ready to serve you. What will you eat today?",
+        "Welcome to snacks Central please select your product"
     ]
 
     random_message = random.choice(vending_messages)
@@ -180,16 +167,16 @@ def welcomeMessages():
 
 def availableProducts():
     availableproductsmessages = [
-        "Choose: dairy milk, KitKat, Kurkure, or Lays?",
-        "Pick one: dairy milk, KitKat, Kurkure, or Lays.",
-        "Four options: dairy milk, KitKat, Kurkure, Lays.",
-        "Select: dairy milk, KitKat, Kurkure, or Lays?",
-        "Your choices: dairy milk, KitKat, Kurkure, Lays.",
-        "Options: dairy milk, KitKat, Kurkure, Lays.",
-        "Decide: dairy milk, KitKat, Kurkure, or Lays?",
-        "Which one: dairy milk, KitKat, Kurkure, or Lays?",
-        "Your call: dairy milk, KitKat, Kurkure, Lays.",
-        "Pick your snack: dairy milk, KitKat, Kurkure, Lays."
+        "Choose: Dairymilk, KitKat, Kurkure, or Lays?",
+        "Pick one: Dairymilk, KitKat, Kurkure, or Lays.",
+        "Four options: Dairymilk, KitKat, Kurkure, Lays.",
+        "Select: Dairymilk, KitKat, Kurkure, or Lays?",
+        "Your choices: Dairymilk, KitKat, Kurkure, Lays.",
+        "Options: Dairymilk, KitKat, Kurkure, Lays.",
+        "Decide: Dairymilk, KitKat, Kurkure, or Lays?",
+        "Which one: Dairymilk, KitKat, Kurkure, or Lays?",
+        "Your call: Dairymilk, KitKat, Kurkure, Lays.",
+        "Pick your snack: Dairymilk, KitKat, Kurkure, Lays."
     ]
 
     random_message = random.choice(availableproductsmessages)
@@ -202,7 +189,7 @@ def selectProductKeypad():
     while True:
         # call the readKeypad function for each row of the keypad
         if readKeypad(L1, ["1", "2", "3", "A"]) == "1":
-            say("You selected dairy milk", lang)
+            say("You selected dairymilk", lang)
             return "dairy milk"
         elif readKeypad(L1, ["1", "2", "3", "A"]) == "2":
             say("You selected KitKat", lang)
@@ -237,7 +224,7 @@ def paymentMethodOptions():
         "Coins or UPI, we make snacking easy and convenient!",
         "Tap into the future with UPI or keep it classic with coins.",
         "From coins to UPI, we've got your payment preferences covered.",
-        "Your snack, your way – whether with coins or a UPI transaction.",
+        "Your snack, your way, whether with coins or a UPI transaction.",
         "Coins or UPI, the choice is yours, and the snack is ready to go!"
     ]
 
@@ -250,14 +237,14 @@ def thankYouMessages():
         "Thank you for choosing us for your snack break!",
         "Your satisfaction is our delight. Thanks for shopping with us!",
         "A big 'thank you' for making us your snack destination!",
-        "We're grateful for your purchase. Enjoy your treats!",
+        "We are grateful for your purchase. Enjoy your treats!",
         "Thanks for being a part of our vending machine family.",
         "Your choice makes us smile. Thanks for shopping with us!",
         "Your snack adventure starts here. Thanks for choosing us!",
-        "We're delighted you stopped by. Thanks for shopping!",
+        "We are delighted you stopped by. Thanks for shopping!",
         "Your support means the world to us. Thank you for your purchase!",
         "As your snacks are dispensed, our gratitude is also delivered. Thank you!",
-        "We're vending happiness, and you've made our day. Thank you!",
+        "We are vending happiness, and you've made our day. Thank you!",
         "Your choice makes us vending happy. Thanks for your patronage!"
     ]
 
@@ -439,7 +426,7 @@ def open_and_close_qr_code(file_name):
     label = tk.Label(root, image=qr_code_photo)
     label.pack()
 
-    if receivedPayments():
+    if receivedPayments() == "Dairy Milk" or receivedPayments() == "Kitkat" or receivedPayments() == True:
         root.after(1000, lambda: close_window(root, file_name))
 
     root.mainloop()
@@ -457,7 +444,7 @@ def keypadVendingMachine():
         time.sleep(3)
         say(paymentMethodOptions(), lang)
         open_and_close_qr_code(qr_code_file_name)
-        time.sleep(30)
+        time.sleep(10)
         say("It will take sometime to process your payment.", lang)
         while True:
             if receivedPayments() == "Dairy Milk":
@@ -484,7 +471,7 @@ def keypadVendingMachine():
         time.sleep(3)
         say(paymentMethodOptions(), lang)
         open_and_close_qr_code(qr_code_file_name)
-        time.sleep(30)
+        time.sleep(10)
         say("It will take sometime to process your payment.", lang)
         while True:
             if receivedPayments() == "Kitkat":
@@ -511,7 +498,7 @@ def keypadVendingMachine():
         time.sleep(3)
         say(paymentMethodOptions(), lang)
         open_and_close_qr_code(qr_code_file_name)
-        time.sleep(30)
+        time.sleep(10)
         say("It will take sometime to process your payment.", lang)
         while True:
             if receivedPayments() == True:
@@ -538,7 +525,7 @@ def keypadVendingMachine():
         time.sleep(3)
         say(paymentMethodOptions(), lang)
         open_and_close_qr_code(qr_code_file_name)
-        time.sleep(30)
+        time.sleep(10)
         say("It will take sometime to process your payment.", lang)
         while True:
             if receivedPayments() == True:
@@ -576,7 +563,7 @@ def voiceVendingMachine():
         time.sleep(3)
         say(paymentMethodOptions(), lang1)
         open_and_close_qr_code(qr_code_file_name)
-        time.sleep(30)
+        time.sleep(10)
         say("It will take sometime to process your payment.", lang1)
         while True:
             if receivedPayments() == "Dairy Milk":
@@ -603,7 +590,7 @@ def voiceVendingMachine():
         time.sleep(3)
         say(paymentMethodOptions(), lang1)
         open_and_close_qr_code(qr_code_file_name)
-        time.sleep(30)
+        time.sleep(10)
         say("It will take sometime to process your payment.", lang1)
         while True:
             if receivedPayments() == "Kitkat":
@@ -630,7 +617,7 @@ def voiceVendingMachine():
         time.sleep(3)
         say(paymentMethodOptions(), lang1)
         open_and_close_qr_code(qr_code_file_name)
-        time.sleep(30)
+        time.sleep(10)
         say("It will take sometime to process your payment.", lang1)
         while True:
             if receivedPayments() == True:
@@ -657,7 +644,7 @@ def voiceVendingMachine():
         time.sleep(3)
         say(paymentMethodOptions(), lang1)
         open_and_close_qr_code(qr_code_file_name)
-        time.sleep(30)
+        time.sleep(10)
         say("It will take sometime to process your payment.", lang1)
         while True:
             if receivedPayments() == True:
