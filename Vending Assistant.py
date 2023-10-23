@@ -180,16 +180,16 @@ def welcomeMessages():
 
 def availableProducts():
     availableproductsmessages = [
-        "Choose: Happident, KitKat, Kurkure, or Lays?",
-        "Pick one: Happident, KitKat, Kurkure, or Lays.",
-        "Four options: Happident, KitKat, Kurkure, Lays.",
-        "Select: Happident, KitKat, Kurkure, or Lays?",
-        "Your choices: Happident, KitKat, Kurkure, Lays.",
-        "Options: Happident, KitKat, Kurkure, Lays.",
-        "Decide: Happident, KitKat, Kurkure, or Lays?",
-        "Which one: Happident, KitKat, Kurkure, or Lays?",
-        "Your call: Happident, KitKat, Kurkure, Lays.",
-        "Pick your snack: Happident, KitKat, Kurkure, Lays."
+        "Choose: dairy milk, KitKat, Kurkure, or Lays?",
+        "Pick one: dairy milk, KitKat, Kurkure, or Lays.",
+        "Four options: dairy milk, KitKat, Kurkure, Lays.",
+        "Select: dairy milk, KitKat, Kurkure, or Lays?",
+        "Your choices: dairy milk, KitKat, Kurkure, Lays.",
+        "Options: dairy milk, KitKat, Kurkure, Lays.",
+        "Decide: dairy milk, KitKat, Kurkure, or Lays?",
+        "Which one: dairy milk, KitKat, Kurkure, or Lays?",
+        "Your call: dairy milk, KitKat, Kurkure, Lays.",
+        "Pick your snack: dairy milk, KitKat, Kurkure, Lays."
     ]
 
     random_message = random.choice(availableproductsmessages)
@@ -197,13 +197,13 @@ def availableProducts():
 
 
 def selectProductKeypad():
-    say("Please Select your Product. \nPress 1 for happydent\nPress 2 for KitKat\nPress 3 for Lays\nPress 4 for Kurkure",
+    say("Please Select your Product. \nPress 1 for dairy milk\nPress 2 for KitKat\nPress 3 for Lays\nPress 4 for Kurkure",
         lang)
     while True:
         # call the readKeypad function for each row of the keypad
         if readKeypad(L1, ["1", "2", "3", "A"]) == "1":
-            say("You selected happydent", lang)
-            return "happydent"
+            say("You selected dairy milk", lang)
+            return "dairy milk"
         elif readKeypad(L1, ["1", "2", "3", "A"]) == "2":
             say("You selected KitKat", lang)
             return "kitkat"
@@ -288,7 +288,7 @@ def recognize_speech():
         return None
 
 
-def Happident():
+def dairyMilk():
     servo_pin = 2
     GPIO.setup(servo_pin, GPIO.OUT)
     pwm = GPIO.PWM(servo_pin, 50)
@@ -393,7 +393,15 @@ def receivedPayments():
                         amount = row_data_col4[0].split("Rs.")
 
                         if str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
+                                amount[1]) == 5 and '@' in data_12:
+                            # print(date_time, row_data[0], row_data[1], data_12)
+                            return "Dairy Milk"
+                        elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
                                 amount[1]) == 10 and '@' in data_12:
+                            # print(date_time, row_data[0], row_data[1], data_12)
+                            return "Kitkat"
+                        elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
+                                amount[1]) == 20 and '@' in data_12:
                             # print(date_time, row_data[0], row_data[1], data_12)
                             return True
 
@@ -439,25 +447,25 @@ def open_and_close_qr_code(file_name):
 
 def keypadVendingMachine():
     product = selectProductKeypad()
-    if "happydent" in str(product).lower():
-        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=10.00&tn=To%20Vending%20Machine%20For%20Happydent&cu=INR"
+    if "dairy milk" in str(product).lower():
+        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=05.00&tn=To%20Vending%20Machine%20For%20Dairy%20Milk&cu=INR"
 
-        qr_code_file_name = "myUPIid(Happydent).png"
+        qr_code_file_name = "myUPIid(Dairy Milk).png"
         generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", product)
-        say("Please do the Payment of Happident.", lang)
+        say("Please do the Payment of dairy milk.", lang)
         time.sleep(3)
         say(paymentMethodOptions(), lang)
         open_and_close_qr_code(qr_code_file_name)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang)
         while True:
-            if receivedPayments():
+            if receivedPayments() == "Dairy Milk":
                 say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + "Happident is being dispensed from the vending Machine. Please collect your Happident",
+                    :-3] + "dairy milk is being dispensed from the vending Machine. Please collect your dairy milk",
                     lang)
                 time.sleep(10)
-                Happident()
+                dairyMilk()
                 say(thankYouMessages(), lang)
                 time.sleep(15)
                 return "Vended"
@@ -467,14 +475,19 @@ def keypadVendingMachine():
                 time.sleep(15)
 
     elif "kitkat" in str(product).lower():
+        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=10.00&tn=To%20Vending%20Machine%20For%20kitkat&cu=INR"
+
+        qr_code_file_name = "myUPIid(kitkat).png"
+        generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", product)
         say("Please do the Payment of kitkat.", lang)
         time.sleep(3)
         say(paymentMethodOptions(), lang)
+        open_and_close_qr_code(qr_code_file_name)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang)
         while True:
-            if receivedPayments():
+            if receivedPayments() == "Kitkat":
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
                     lang)
@@ -489,14 +502,19 @@ def keypadVendingMachine():
                 time.sleep(15)
 
     elif "kurkure" in str(product).lower():
+        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20kurkure&cu=INR"
+
+        qr_code_file_name = "myUPIid(kurkure).png"
+        generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", product)
         say("Please do the Payment of kurkure.", lang)
         time.sleep(3)
         say(paymentMethodOptions(), lang)
+        open_and_close_qr_code(qr_code_file_name)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang)
         while True:
-            if receivedPayments():
+            if receivedPayments() == True:
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
                     lang)
@@ -511,14 +529,19 @@ def keypadVendingMachine():
                 time.sleep(15)
 
     elif "lays" in str(product).lower():
+        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20Lays&cu=INR"
+
+        qr_code_file_name = "myUPIid(lays).png"
+        generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", product)
         say("Please do the Payment of Lays.", lang)
         time.sleep(3)
         say(paymentMethodOptions(), lang)
+        open_and_close_qr_code(qr_code_file_name)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang)
         while True:
-            if receivedPayments():
+            if receivedPayments() == True:
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
                     lang)
@@ -543,20 +566,25 @@ def keypadVendingMachine():
 
 def voiceVendingMachine():
     command = recognize_speech()
-    if "happydent" in str(command).lower():
+    if "dairy milk" in str(command).lower():
+        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=05.00&tn=To%20Vending%20Machine%20For%20Dairy%20Milk&cu=INR"
+
+        qr_code_file_name = "myUPIid(Dairy Milk).png"
+        generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", command)
-        say("Please do the Payment of Happident.", lang1)
+        say("Please do the Payment of dairy milk.", lang1)
         time.sleep(3)
         say(paymentMethodOptions(), lang1)
+        open_and_close_qr_code(qr_code_file_name)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang1)
         while True:
-            if receivedPayments():
+            if receivedPayments() == "Dairy Milk":
                 say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + "Happident is being dispensed from the vending Machine. Please collect your Happident",
+                    :-3] + "dairy milk is being dispensed from the vending Machine. Please collect your dairy milk",
                     lang1)
                 time.sleep(10)
-                Happident()
+                dairyMilk()
                 say(thankYouMessages(), lang1)
                 time.sleep(15)
                 # break
@@ -566,14 +594,19 @@ def voiceVendingMachine():
                 time.sleep(15)
 
     elif "kitkat" in str(command).lower():
+        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=10.00&tn=To%20Vending%20Machine%20For%20kitkat&cu=INR"
+
+        qr_code_file_name = "myUPIid(kitkat).png"
+        generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", command)
         say("Please do the Payment of kitkat.", lang1)
         time.sleep(3)
         say(paymentMethodOptions(), lang1)
+        open_and_close_qr_code(qr_code_file_name)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang1)
         while True:
-            if receivedPayments():
+            if receivedPayments() == "Kitkat":
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
                     lang1)
@@ -588,14 +621,19 @@ def voiceVendingMachine():
                 time.sleep(15)
 
     elif "kurkure" in str(command).lower():
+        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20kurkure&cu=INR"
+
+        qr_code_file_name = "myUPIid(kurkure).png"
+        generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", command)
         say("Please do the Payment of kurkure.", lang1)
         time.sleep(3)
         say(paymentMethodOptions(), lang1)
+        open_and_close_qr_code(qr_code_file_name)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang1)
         while True:
-            if receivedPayments():
+            if receivedPayments() == True:
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
                     lang1)
@@ -610,14 +648,19 @@ def voiceVendingMachine():
                 time.sleep(15)
 
     elif "lays" in str(command).lower():
+        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20Lays&cu=INR"
+
+        qr_code_file_name = "myUPIid(lays).png"
+        generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", command)
         say("Please do the Payment of Lays.", lang1)
         time.sleep(3)
         say(paymentMethodOptions(), lang1)
+        open_and_close_qr_code(qr_code_file_name)
         time.sleep(30)
         say("It will take sometime to process your payment.", lang1)
         while True:
-            if receivedPayments():
+            if receivedPayments() == True:
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
                     lang1)
