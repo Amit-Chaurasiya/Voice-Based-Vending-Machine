@@ -8,6 +8,7 @@ import csv
 from datetime import datetime, timedelta
 import random
 from translate import Translator
+from googletrans import Translator
 import tkinter as tk
 from PIL import Image, ImageTk
 import qrcode
@@ -39,15 +40,15 @@ GPIO.setup(C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 def say(text, language):
     try:
-        # Translate the text to Hindi
-        translator = Translator(to_lang=language)
-        translation = translator.translate(text)
+        # Translate the text to the target language
+        translator = Translator()
+        translation = translator.translate(text, dest=language)
 
         # Print the translated text
-        print("Text: ", translation)
+        print("Text: ", translation.text)
 
-        # Convert the translated text to speech in Hindi
-        tts = gTTS(text=translation, lang=language)
+        # Convert the translated text to speech in the target language
+        tts = gTTS(text=translation.text, lang=language)
 
         # Save the audio to a temporary file
         audio_file = "translated_audio.mp3"
@@ -64,11 +65,13 @@ def say(text, language):
         while pygame.mixer.music.get_busy():
             pygame.time.Clock().tick(10)
 
-        # # Clean up: remove the temporary audio file
-        # os.remove(audio_file)
+        # Clean up: remove the temporary audio file
+        import os
+        os.remove(audio_file)
 
     except Exception as e:
         print("Translation or audio conversion error:", e)
+
 
 
 def readKeypad(line, characters):
@@ -85,8 +88,7 @@ def readKeypad(line, characters):
 
 
 def selectInputMethod():
-    say("How would you like to vend your product? Two options - by voice or by manual selection", "en")
-    say("Press star to use keypad or press # to use voice for further process", "en")
+    say("How would you like to vend your product? Two options - by voice or by manual selection. Press star to use keypad or press # to use voice for further process", "en")
     while True:
         if readKeypad(L4, ["*", "0", "#", "D"]) == "*":
             say("Thank you for selecting Keypad", "en")
@@ -99,9 +101,9 @@ def selectInputMethod():
 def selectLanguageKeypad():
     say("Please Select one language.", "en")
     say("Press A for Hindi", "hi")
-    say("Press B for Marathi", "mr")
-    say("Press C for English", "en")
-    say("Press D for Malayalam", "ml")
+    say("B for Marathi", "mr")
+    say("C for English", "en")
+    say("D for Malayalam", "ml")
     while True:
         # call the readKeypad function for each row of the keypad
         if readKeypad(L1, ["1", "2", "3", "A"]) == "A":
@@ -121,10 +123,10 @@ def selectLanguageKeypad():
 
 def selectLanguageVoice():
     say("Please Select one language. ", "en")
-    say("Say Hindi or", "hi")
-    say("Say Marathi or", "mr")
-    say("Say English or", "en")
-    say("Say Malayalam", "ml")
+    say("Say Hindi,", "hi")
+    say("Say Marathi,", "mr")
+    say("Say English,", "en")
+    say("Say Malayalam.", "ml")
     while True:
         language = recognize_speech()
         if str(language).lower() == "hindi":
@@ -348,38 +350,41 @@ def receivedPayments():
     formatted_time_range_end = time_range_end.strftime(
         '%Y-%m-%d %H:%M:%S.%f')[:-3]
 
-    try:
-        with open(csvFile, 'r', encoding='utf-8') as csv_file:
-            reader = csv.reader(csv_file)
+    count = 5
 
-            for row_number, row in enumerate(reader, start=1):
-                if len(row) > colNumber1 and len(row) > colNumber2:
-                    if searchWord1 in row[colNumber1] and searchWord2 in row[colNumber2]:
-                        row_data_col2 = row[colNumber1].split()
-                        row_data_col4 = row[colNumber2].split()
-                        date_time = row[1]
-                        try:
-                            data_12 = row_data_col4[12]
-                        except IndexError:
-                            data_12 = "N/A"
+    while count > 0:
+        try:
+            with open(csvFile, 'r', encoding='utf-8') as csv_file:
+                reader = csv.reader(csv_file)
 
-                        global amount
-                        amount = row_data_col4[0].split("Rs.")
+                for row in enumerate(reader, start=1):
+                    if len(row) > colNumber1 and len(row) > colNumber2:
+                        if searchWord1 in row[colNumber1] and searchWord2 in row[colNumber2]:
+                            row_data_col2 = row[colNumber1].split()
+                            row_data_col4 = row[colNumber2].split()
+                            date_time = row[1]
+                            try:
+                                data_12 = row_data_col4[12]
+                            except IndexError:
+                                data_12 = "N/A"
 
-                        if str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
-                                amount[1]) == 5 and '@' in data_12:
-                            return "Cadbury"
-                        elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
-                                amount[1]) == 10 and '@' in data_12:
-                            return "Kitkat"
-                        elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
-                                amount[1]) == 20 and '@' in data_12:
-                            return True
+                            global amount
+                            amount = row_data_col4[0].split("Rs.")
 
-    except FileNotFoundError:
-        print(f"The file '{csvFile}' was not found.")
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
+                            if str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
+                                    amount[1]) == 5 and '@' in data_12:
+                                return "Cadbury"
+                            elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
+                                    amount[1]) == 10 and '@' in data_12:
+                                return "Kitkat"
+                            elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
+                                    amount[1]) == 20 and '@' in data_12:
+                                return True
+            count -= 1
+        except FileNotFoundError:
+            print(f"The file '{csvFile}' was not found.")
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
 
 
 def generate_qr_code(myUPI, file_name):
