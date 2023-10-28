@@ -7,7 +7,7 @@ import time
 import csv
 from datetime import datetime, timedelta
 import random
-from translate import Translator
+# from translate import Translator
 from googletrans import Translator
 import tkinter as tk
 from PIL import Image, ImageTk
@@ -333,7 +333,7 @@ def Lays():
 
 
 def receivedPayments():
-    csvFile = '/home/siesgst/Desktop/Vending Machine/Reporting_CSV1_Final/report_2310.csv'
+    csvFile = '/home/siesgst/Desktop/Payment_Reporting/report_2310.csv'
     searchWord1 = 'INDBNK'
     colNumber1 = 2
 
