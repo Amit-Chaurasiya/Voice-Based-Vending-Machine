@@ -123,7 +123,7 @@ def selectLanguageKeypad():
 
 def selectLanguageVoice():
     say("Please Select one language. ", "en")
-    say("Say Hindi,", "hi")
+    say("say hindee,", "hi")
     say("Say Marathi,", "mr")
     say("Say English,", "en")
     say("Say Malayalam.", "ml")
@@ -159,16 +159,7 @@ def welcomeMessages():
 
 def availableProducts():
     availableproductsmessages = [
-        "Choose: Cadbury, KitKat, Kurkure, or Lays?",
-        "Pick one: Cadbury, KitKat, Kurkure, or Lays.",
-        "Four options: Cadbury, KitKat, Kurkure, Lays.",
-        "Select: Cadbury, KitKat, Kurkure, or Lays?",
-        "Your choices: Cadbury, KitKat, Kurkure, Lays.",
-        "Options: Cadbury, KitKat, Kurkure, Lays.",
-        "Decide: Cadbury, KitKat, Kurkure, or Lays?",
-        "Which one: Cadbury, KitKat, Kurkure, or Lays?",
-        "Your call: Cadbury, KitKat, Kurkure, Lays.",
-        "Pick your snack: Cadbury, KitKat, Kurkure, Lays."
+        "ek chunen: kaidabaree, kitakait, kurakure, ya lays."
     ]
 
     random_message = random.choice(availableproductsmessages)
@@ -176,24 +167,24 @@ def availableProducts():
 
 
 def selectProductKeypad():
-    say("Please Select your Product. \nPress 1 for Cadbury\nPress 2 for KitKat\nPress 3 for Lays\nPress 4 for Kurkure",
+    say("krpaya aap jo chaahate hain use chunen, kaidabaree ke lie 1 dabaen, kitakait ke lie 2 dabaen, kurakure ke lie 3 dabaen, lays ke lie 4 dabaen",
         lang)
     while True:
         # call the readKeypad function for each row of the keypad
         if readKeypad(L1, ["1", "2", "3", "A"]) == "1":
-            say("You selected Cadbury", lang)
+            say("aapane kaidabaree ko chuna", lang)
             return "cadbury"
         elif readKeypad(L1, ["1", "2", "3", "A"]) == "2":
-            say("You selected KitKat", lang)
+            say("aapane kitakait ko chuna", lang)
             return "kitkat"
         elif readKeypad(L1, ["1", "2", "3", "A"]) == "3":
-            say("You selected Lays", lang)
-            return "Lays"
-        elif readKeypad(L2, ["4", "5", "6", "B"]) == "4":
-            say("You selected Kurkure", lang)
+            say("aapane kurakure ko chuna", lang)
             return "kurkure"
+        elif readKeypad(L2, ["4", "5", "6", "B"]) == "4":
+            say("aapane lez ko chuna", lang)
+            return "lays"
         elif readKeypad(L4, ["*", "0", "#", "D"]) == "0":
-            say("Vending Machine is Shutting Down", lang)
+            say("vending masheen band ho rahee hai", lang)
             return "keep quiet"
         time.sleep(0.5)
 
@@ -333,7 +324,7 @@ def Lays():
 
 
 def receivedPayments():
-    csvFile = '/home/siesgst/Desktop/Payment_Reporting/report_2310.csv'
+    csvFile = '/home/siesgst/Desktop/Vending Payment Records/report_2311.csv'
     searchWord1 = 'INDBNK'
     colNumber1 = 2
 
@@ -350,41 +341,38 @@ def receivedPayments():
     formatted_time_range_end = time_range_end.strftime(
         '%Y-%m-%d %H:%M:%S.%f')[:-3]
 
-    count = 5
+    try:
+        with open(csvFile, 'r', encoding='utf-8') as csv_file:
+            reader = csv.reader(csv_file)
 
-    while count > 0:
-        try:
-            with open(csvFile, 'r', encoding='utf-8') as csv_file:
-                reader = csv.reader(csv_file)
+            for row_number, row in enumerate(reader, start=1):
+                if len(row) > colNumber1 and len(row) > colNumber2:
+                    if searchWord1 in row[colNumber1] and searchWord2 in row[colNumber2]:
+                        row_data_col2 = row[colNumber1].split()
+                        row_data_col4 = row[colNumber2].split()
+                        date_time = row[1]
+                        try:
+                            data_12 = row_data_col4[12]
+                        except IndexError:
+                            data_12 = "N/A"
 
-                for row in enumerate(reader, start=1):
-                    if len(row) > colNumber1 and len(row) > colNumber2:
-                        if searchWord1 in row[colNumber1] and searchWord2 in row[colNumber2]:
-                            row_data_col2 = row[colNumber1].split()
-                            row_data_col4 = row[colNumber2].split()
-                            date_time = row[1]
-                            try:
-                                data_12 = row_data_col4[12]
-                            except IndexError:
-                                data_12 = "N/A"
+                        global amount
+                        amount = row_data_col4[0].split("Rs.")
 
-                            global amount
-                            amount = row_data_col4[0].split("Rs.")
-
-                            if str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
-                                    amount[1]) == 5 and '@' in data_12:
-                                return "Cadbury"
-                            elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
-                                    amount[1]) == 10 and '@' in data_12:
-                                return "Kitkat"
-                            elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
-                                    amount[1]) == 20 and '@' in data_12:
-                                return True
-            count -= 1
-        except FileNotFoundError:
-            print(f"The file '{csvFile}' was not found.")
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
+                        if str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
+                                amount[1]) == 5 and '@' in data_12:
+                            return "Cadbury"
+                        elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
+                                amount[1]) == 10 and '@' in data_12:
+                            return "Kitkat"
+                        elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
+                                amount[1]) == 20 and '@' in data_12:
+                            return "True"
+                            
+    except FileNotFoundError:
+        print(f"The file '{csvFile}' was not found.")
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
 
 
 def generate_qr_code(myUPI, file_name):
@@ -400,9 +388,9 @@ def generate_qr_code(myUPI, file_name):
     img.save(file_name)
 
 
-# def close_window(root, file_name):
-#     root.destroy()
-#     os.remove(file_name)
+def close_window(root, file_name):
+     root.destroy()
+     os.remove(file_name)
 
 
 def open_and_close_qr_code(file_name):
@@ -415,10 +403,8 @@ def open_and_close_qr_code(file_name):
     label = tk.Label(root, image=qr_code_photo)
     label.pack()
 
-    if receivedPayments() == "Cadbury" or receivedPayments() == "Kitkat" or receivedPayments() == True:
-        # root.after(1000, lambda: close_window(root, file_name))
-        root.destroy()
-        os.remove(file_name)
+    if receivedPayments() == "Cadbury" or receivedPayments() == "Kitkat" or receivedPayments() == "True":
+        root.after(1000, lambda: close_window(root, file_name))
 
     root.mainloop()
 
@@ -430,20 +416,19 @@ def keypadVendingMachine():
         qr_code_file_name = "myUPIid(Cadbury).png"
         generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", product)
-        say("Please do the Payment of dairy milk.", lang)
-        time.sleep(3)
+        say("Please do the Payment of Cadbury.", lang)
         say(paymentMethodOptions(), lang)
         open_and_close_qr_code(qr_code_file_name)
         say("It will take sometime to process your payment.", lang)
         while True:
             if receivedPayments() == "Cadbury":
                 say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + "dairy milk is being dispensed from the vending Machine. Please collect your dairy milk",
+                    :-3] + "cadbury is being dispensed from the vending Machine. Please collect your Cadbury",
                     lang)
-                time.sleep(10)
+                time.sleep(3)
                 dairyMilk()
                 say(thankYouMessages(), lang)
-                time.sleep(15)
+                time.sleep(5)
                 return "Vended"
                 # break
             else:
@@ -456,7 +441,6 @@ def keypadVendingMachine():
         generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", product)
         say("Please do the Payment of kitkat.", lang)
-        time.sleep(3)
         say(paymentMethodOptions(), lang)
         open_and_close_qr_code(qr_code_file_name)
         say("It will take sometime to process your payment.", lang)
@@ -465,10 +449,10 @@ def keypadVendingMachine():
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
                     lang)
-                time.sleep(10)
+                time.sleep(3)
                 Kitkat()
                 say(thankYouMessages(), lang)
-                time.sleep(15)
+                time.sleep(5)
                 return "Vended"
                 # break
             else:
@@ -481,7 +465,6 @@ def keypadVendingMachine():
         generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", product)
         say("Please do the Payment of kurkure.", lang)
-        time.sleep(3)
         say(paymentMethodOptions(), lang)
         open_and_close_qr_code(qr_code_file_name)
         say("It will take sometime to process your payment.", lang)
@@ -490,10 +473,10 @@ def keypadVendingMachine():
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
                     lang)
-                time.sleep(10)
+                time.sleep(3)
                 kurkure()
                 say(thankYouMessages(), lang)
-                time.sleep(15)
+                time.sleep(5)
                 return "Vended"
                 # break
             else:
@@ -506,7 +489,6 @@ def keypadVendingMachine():
         generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", product)
         say("Please do the Payment of Lays.", lang)
-        time.sleep(3)
         say(paymentMethodOptions(), lang)
         open_and_close_qr_code(qr_code_file_name)
         say("It will take sometime to process your payment.", lang)
@@ -515,10 +497,10 @@ def keypadVendingMachine():
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
                     lang)
-                time.sleep(10)
+                time.sleep(3)
                 Lays()
                 say(thankYouMessages(), lang)
-                time.sleep(15)
+                time.sleep(5)
                 return "Vended"
                 # break
             else:
@@ -541,20 +523,20 @@ def voiceVendingMachine():
         qr_code_file_name = "myUPIid(Cadbury).png"
         generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", command)
-        say("Please do the Payment of dairy milk.", lang1)
-        time.sleep(3)
+        say("Please do the Payment of Cadbury.", lang1)
         say(paymentMethodOptions(), lang1)
         open_and_close_qr_code(qr_code_file_name)
         say("It will take sometime to process your payment.", lang1)
+        print(receivedPayments())
         while True:
             if receivedPayments() == "Cadbury":
                 say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + "dairy milk is being dispensed from the vending Machine. Please collect your dairy milk",
+                    :-3] + "cadbury is being dispensed from the vending Machine. Please collect your cadbury",
                     lang1)
-                time.sleep(10)
+                time.sleep(3)
                 dairyMilk()
                 say(thankYouMessages(), lang1)
-                time.sleep(15)
+                time.sleep(5)
                 # break
                 return "Vended"
             else:
@@ -567,7 +549,6 @@ def voiceVendingMachine():
         generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", command)
         say("Please do the Payment of kitkat.", lang1)
-        time.sleep(3)
         say(paymentMethodOptions(), lang1)
         open_and_close_qr_code(qr_code_file_name)
         say("It will take sometime to process your payment.", lang1)
@@ -576,10 +557,10 @@ def voiceVendingMachine():
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
                     lang1)
-                time.sleep(10)
+                time.sleep(3)
                 Kitkat()
                 say(thankYouMessages(), lang1)
-                time.sleep(15)
+                time.sleep(5)
                 # break
                 return "Vended"
             else:
@@ -592,7 +573,6 @@ def voiceVendingMachine():
         generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", command)
         say("Please do the Payment of kurkure.", lang1)
-        time.sleep(3)
         say(paymentMethodOptions(), lang1)
         open_and_close_qr_code(qr_code_file_name)
         say("It will take sometime to process your payment.", lang1)
@@ -601,10 +581,10 @@ def voiceVendingMachine():
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
                     lang1)
-                time.sleep(10)
+                time.sleep(3)
                 kurkure()
                 say(thankYouMessages(), lang1)
-                time.sleep(15)
+                time.sleep(5)
                 # break
                 return "Vended"
             else:
@@ -617,7 +597,6 @@ def voiceVendingMachine():
         generate_qr_code(myUPI, qr_code_file_name)
         print("Recognized text:", command)
         say("Please do the Payment of Lays.", lang1)
-        time.sleep(3)
         say(paymentMethodOptions(), lang1)
         open_and_close_qr_code(qr_code_file_name)
         say("It will take sometime to process your payment.", lang1)
@@ -626,10 +605,10 @@ def voiceVendingMachine():
                 say("Payment received of Rupees " + str(amount[1])[
                     :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
                     lang1)
-                time.sleep(10)
+                time.sleep(3)
                 Lays()
                 say(thankYouMessages(), lang1)
-                time.sleep(15)
+                time.sleep(5)
                 # break
                 return "Vended"
             else:
@@ -654,7 +633,6 @@ while True:
         if inputMethod == "Manual":
             lang = selectLanguageKeypad()
             say(welcomeMessages(), lang)
-            time.sleep(2)
             while True:
                 if keypadVendingMachine() == "Vended":
                     break
@@ -664,9 +642,7 @@ while True:
         elif inputMethod == "voice":
             lang1 = selectLanguageVoice()
             say(welcomeMessages(), lang1)
-            time.sleep(2)
             say(availableProducts(), lang1)
-            time.sleep(2)
             while True:
                 if voiceVendingMachine() == "Vended":
                     break
