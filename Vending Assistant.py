@@ -7,12 +7,35 @@ import time
 import csv
 from datetime import datetime, timedelta
 import random
-# from translate import Translator
 from googletrans import Translator
 import tkinter as tk
 from PIL import Image, ImageTk
 import qrcode
 import os
+import threading
+import secrets
+import openpyxl
+
+TRANSACTION_CODE_FILE = "/home/siesgst/Desktop/Vending Machine/transaction_codes.txt"
+
+
+def generate_transaction_code():
+    return secrets.token_hex(16)  # Generates a random 32-character hexadecimal code
+
+
+def save_transaction_code(code, product, amt):
+    with open(TRANSACTION_CODE_FILE, "a") as file:
+        file.write(f"{code}\t{product}\t{amt}\n")
+
+
+def is_transaction_code_unique(code):
+    with open(TRANSACTION_CODE_FILE, "r") as file:
+        existing_codes = file.read().splitlines()
+    return code not in existing_codes
+
+
+def generate_transaction_code():
+    return secrets.token_hex(16)
 
 
 L1 = 25
@@ -259,15 +282,15 @@ def dairyMilk():
     servo_pin = 2
     GPIO.setup(servo_pin, GPIO.OUT)
     pwm = GPIO.PWM(servo_pin, 50)
-    pwm.start(7.5)
+    pwm.start(0)
     try:
         for _ in range(1):
-            pwm.ChangeDutyCycle(2.5)  # 0 degrees
-            time.sleep(1)
+            pwm.ChangeDutyCycle(12)  # 0 degrees
+            time.sleep(0.1)
             pwm.ChangeDutyCycle(7.5)  # 90 degrees (neutral position)
-            time.sleep(1)
+            time.sleep(0.1)
             pwm.ChangeDutyCycle(12.5)  # 180 degrees
-            time.sleep(1)
+            time.sleep(0.1)
     finally:
         pwm.stop()
 
@@ -276,15 +299,15 @@ def Kitkat():
     servo_pin = 3
     GPIO.setup(servo_pin, GPIO.OUT)
     pwm = GPIO.PWM(servo_pin, 50)
-    pwm.start(7.5)
+    pwm.start(0)
     try:
         for _ in range(1):
-            pwm.ChangeDutyCycle(2.5)  # 0 degrees
-            time.sleep(1)
+            pwm.ChangeDutyCycle(12)  # 0 degrees
+            time.sleep(0.1)
             pwm.ChangeDutyCycle(7.5)  # 90 degrees (neutral position)
-            time.sleep(1)
+            time.sleep(0.1)
             pwm.ChangeDutyCycle(12.5)  # 180 degrees
-            time.sleep(1)
+            time.sleep(0.1)
     finally:
         pwm.stop()
 
@@ -293,15 +316,15 @@ def kurkure():
     servo_pin = 4
     GPIO.setup(servo_pin, GPIO.OUT)
     pwm = GPIO.PWM(servo_pin, 50)
-    pwm.start(7.5)
+    pwm.start(0)
     try:
         for _ in range(1):
-            pwm.ChangeDutyCycle(2.5)  # 0 degrees
-            time.sleep(1)
+            pwm.ChangeDutyCycle(12)  # 0 degrees
+            time.sleep(0.1)
             pwm.ChangeDutyCycle(7.5)  # 90 degrees (neutral position)
-            time.sleep(1)
+            time.sleep(0.1)
             pwm.ChangeDutyCycle(12.5)  # 180 degrees
-            time.sleep(1)
+            time.sleep(0.1)
     finally:
         pwm.stop()
 
@@ -310,36 +333,38 @@ def Lays():
     servo_pin = 14
     GPIO.setup(servo_pin, GPIO.OUT)
     pwm = GPIO.PWM(servo_pin, 50)
-    pwm.start(7.5)
+    pwm.start(0)
     try:
         for _ in range(1):
-            pwm.ChangeDutyCycle(2.5)  # 0 degrees
-            time.sleep(1)
+            pwm.ChangeDutyCycle(12)  # 0 degrees
+            time.sleep(0.1)
             pwm.ChangeDutyCycle(7.5)  # 90 degrees (neutral position)
-            time.sleep(1)
+            time.sleep(0.1)
             pwm.ChangeDutyCycle(12.5)  # 180 degrees
-            time.sleep(1)
+            time.sleep(0.1)
     finally:
         pwm.stop()
 
 
 def receivedPayments():
-    csvFile = '/home/siesgst/Desktop/Vending Payment Records/report_2311.csv'
+    csvFile = '/home/siesgst/Desktop/Vending Payment Records_CiiA/report_2311.csv'
     searchWord1 = 'INDBNK'
     colNumber1 = 2
 
     searchWord2 = 'credited'
     colNumber2 = 4
-    # Define the time range for comparison (10 minutes before and after the current time)
-    current_time = datetime.now()
-    time_range_start = current_time - timedelta(minutes=10)
-    time_range_end = current_time + timedelta(minutes=10)
 
-    # Format time_range_start and time_range_end to display milliseconds
-    formatted_time_range_start = time_range_start.strftime(
-        '%Y-%m-%d %H:%M:%S.%f')[:-3]
-    formatted_time_range_end = time_range_end.strftime(
-        '%Y-%m-%d %H:%M:%S.%f')[:-3]
+    def is_transaction_within_time_range(date_time):
+        current_time = datetime.now()
+        time_range_start = current_time - timedelta(minutes=0.5)
+        time_range_end = current_time + timedelta(minutes=1)
+
+        formatted_time_range_start = time_range_start.strftime(
+            '%Y-%m-%d %H:%M:%S.%f')[:-3]
+        formatted_time_range_end = time_range_end.strftime(
+            '%Y-%m-%d %H:%M:%S.%f')[:-3]
+
+        return str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end)
 
     try:
         with open(csvFile, 'r', encoding='utf-8') as csv_file:
@@ -359,20 +384,20 @@ def receivedPayments():
                         global amount
                         amount = row_data_col4[0].split("Rs.")
 
-                        if str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
-                                amount[1]) == 5 and '@' in data_12:
+                        if is_transaction_within_time_range(date_time) and float(amount[1]) == 5 and '@' in data_12:
                             return "Cadbury"
-                        elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
-                                amount[1]) == 10 and '@' in data_12:
+                        elif is_transaction_within_time_range(date_time) and float(amount[1]) == 10 and '@' in data_12:
                             return "Kitkat"
-                        elif str(formatted_time_range_start) <= str(date_time) <= str(formatted_time_range_end) and float(
-                                amount[1]) == 20 and '@' in data_12:
+                        elif is_transaction_within_time_range(date_time) and float(amount[1]) == 20 and '@' in data_12:
                             return "True"
-                            
+
     except FileNotFoundError:
         print(f"The file '{csvFile}' was not found.")
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+
+    # Return None if no matching transaction is found
+    return None
 
 
 def generate_qr_code(myUPI, file_name):
@@ -388,12 +413,22 @@ def generate_qr_code(myUPI, file_name):
     img.save(file_name)
 
 
+time_range_start = '2021-11-16 01:24:59.132'
+time_range_end = '2021-11-16 01:24:59.132'
+
+
 def close_window(root, file_name):
-     root.destroy()
-     os.remove(file_name)
+    root.destroy()
+    os.remove(file_name)
 
 
 def open_and_close_qr_code(file_name):
+    def check_payments_and_close(root, file_name):
+        while True:
+            if receivedPayments() == "Cadbury" or receivedPayments() == "Kitkat" or receivedPayments() == "True":
+                root.after(0, lambda: close_window(root, file_name))
+                break
+
     root = tk.Tk()
     root.title("QR Code Viewer")
 
@@ -403,225 +438,253 @@ def open_and_close_qr_code(file_name):
     label = tk.Label(root, image=qr_code_photo)
     label.pack()
 
-    if receivedPayments() == "Cadbury" or receivedPayments() == "Kitkat" or receivedPayments() == "True":
-        root.after(1000, lambda: close_window(root, file_name))
+    # Start a thread to check for payments and close the window when received
+    thread = threading.Thread(target=check_payments_and_close, args=(root, file_name))
+    thread.start()
 
     root.mainloop()
 
 
+global transaction_code, amt, product
+
+
+
 def keypadVendingMachine():
-    product = selectProductKeypad()
-    if "cadbury" in str(product).lower():
-        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=05.00&tn=To%20Vending%20Machine%20For%20Cadbury&cu=INR"
-        qr_code_file_name = "myUPIid(Cadbury).png"
-        generate_qr_code(myUPI, qr_code_file_name)
-        print("Recognized text:", product)
-        say("Please do the Payment of Cadbury.", lang)
-        say(paymentMethodOptions(), lang)
-        open_and_close_qr_code(qr_code_file_name)
-        say("It will take sometime to process your payment.", lang)
-        while True:
-            if receivedPayments() == "Cadbury":
-                say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + "cadbury is being dispensed from the vending Machine. Please collect your Cadbury",
-                    lang)
-                time.sleep(3)
-                dairyMilk()
-                say(thankYouMessages(), lang)
-                time.sleep(5)
-                return "Vended"
-                # break
-            else:
-                print("No Payment Received")
-                time.sleep(15)
+    transaction_code = generate_transaction_code()
 
-    elif "kitkat" in str(product).lower():
-        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=10.00&tn=To%20Vending%20Machine%20For%20kitkat&cu=INR"
-        qr_code_file_name = "myUPIid(kitkat).png"
-        generate_qr_code(myUPI, qr_code_file_name)
-        print("Recognized text:", product)
-        say("Please do the Payment of kitkat.", lang)
-        say(paymentMethodOptions(), lang)
-        open_and_close_qr_code(qr_code_file_name)
-        say("It will take sometime to process your payment.", lang)
-        while True:
-            if receivedPayments() == "Kitkat":
-                say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
-                    lang)
-                time.sleep(3)
-                Kitkat()
-                say(thankYouMessages(), lang)
-                time.sleep(5)
-                return "Vended"
-                # break
-            else:
-                print("No Payment Received")
-                time.sleep(15)
+    if is_transaction_code_unique(transaction_code):
+        product = selectProductKeypad()
+        if "cadbury" in str(product).lower():
+            myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=05.00&tn=To%20Vending%20Machine%20For%20Cadbury&cu=INR"
+            qr_code_file_name = "myUPIid(Cadbury).png"
+            generate_qr_code(myUPI, qr_code_file_name)
+            print("Recognized text:", product)
+            say("Please do the Payment of Cadbury.", lang)
+            say(paymentMethodOptions(), lang)
+            open_and_close_qr_code(qr_code_file_name)
+            say("It will take sometime to process your payment.", lang)
+            while True:
+                if receivedPayments() == "Cadbury":
+                    say("Payment received of Rupees " + str(amount[1])[
+                        :-3] + ". cadbury is being dispensed from the vending Machine. Please collect your Cadbury",
+                        lang)
+                    time.sleep(3)
+                    save_transaction_code(transaction_code, product, amt)
+                    dairyMilk()
+                    say(thankYouMessages(), lang)
+                    time.sleep(5)
+                    return "Vended"
+                    # break
+                else:
+                    print("No Payment Received")
+                    time.sleep(15)
 
-    elif "kurkure" in str(product).lower():
-        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20kurkure&cu=INR"
-        qr_code_file_name = "myUPIid(kurkure).png"
-        generate_qr_code(myUPI, qr_code_file_name)
-        print("Recognized text:", product)
-        say("Please do the Payment of kurkure.", lang)
-        say(paymentMethodOptions(), lang)
-        open_and_close_qr_code(qr_code_file_name)
-        say("It will take sometime to process your payment.", lang)
-        while True:
-            if receivedPayments() == True:
-                say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
-                    lang)
-                time.sleep(3)
-                kurkure()
-                say(thankYouMessages(), lang)
-                time.sleep(5)
-                return "Vended"
-                # break
-            else:
-                print("No Payment Received")
-                time.sleep(15)
+        elif "kitkat" in str(product).lower():
+            myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=10.00&tn=To%20Vending%20Machine%20For%20kitkat&cu=INR"
+            qr_code_file_name = "myUPIid(kitkat).png"
+            generate_qr_code(myUPI, qr_code_file_name)
+            print("Recognized text:", product)
+            say("Please do the Payment of kitkat.", lang)
+            say(paymentMethodOptions(), lang)
+            open_and_close_qr_code(qr_code_file_name)
+            say("It will take sometime to process your payment.", lang)
+            while True:
+                if receivedPayments() == "Kitkat":
+                    say("Payment received of Rupees " + str(amount[1])[
+                        :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
+                        lang)
+                    time.sleep(3)
+                    save_transaction_code(transaction_code, product, amt)
+                    Kitkat()
+                    say(thankYouMessages(), lang)
+                    time.sleep(5)
+                    return "Vended"
+                    # break
+                else:
+                    print("No Payment Received")
+                    time.sleep(15)
 
-    elif "lays" in str(product).lower():
-        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20Lays&cu=INR"
-        qr_code_file_name = "myUPIid(lays).png"
-        generate_qr_code(myUPI, qr_code_file_name)
-        print("Recognized text:", product)
-        say("Please do the Payment of Lays.", lang)
-        say(paymentMethodOptions(), lang)
-        open_and_close_qr_code(qr_code_file_name)
-        say("It will take sometime to process your payment.", lang)
-        while True:
-            if receivedPayments() == True:
-                say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
-                    lang)
-                time.sleep(3)
-                Lays()
-                say(thankYouMessages(), lang)
-                time.sleep(5)
-                return "Vended"
-                # break
-            else:
-                print("No Payment Received")
-                time.sleep(15)
+        elif "kurkure" in str(product).lower():
+            myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20kurkure&cu=INR"
+            qr_code_file_name = "myUPIid(kurkure).png"
+            generate_qr_code(myUPI, qr_code_file_name)
+            print("Recognized text:", product)
+            say("Please do the Payment of kurkure.", lang)
+            say(paymentMethodOptions(), lang)
+            open_and_close_qr_code(qr_code_file_name)
+            say("It will take sometime to process your payment.", lang)
+            while True:
+                if receivedPayments() == "True":
+                    say("Payment received of Rupees " + str(amount[1])[
+                        :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
+                        lang)
+                    time.sleep(3)
+                    save_transaction_code(transaction_code, product, amt)
+                    kurkure()
+                    say(thankYouMessages(), lang)
+                    time.sleep(5)
+                    return "Vended"
+                    # break
+                else:
+                    print("No Payment Received")
+                    time.sleep(15)
 
-    elif "keep quiet" in product:
-        say("shutting down..", lang)
-        time.sleep(3)
-        exit(0)
+        elif "lays" in str(product).lower():
+            myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20Lays&cu=INR"
+            qr_code_file_name = "myUPIid(lays).png"
+            generate_qr_code(myUPI, qr_code_file_name)
+            print("Recognized text:", product)
+            say("Please do the Payment of Lays.", lang)
+            say(paymentMethodOptions(), lang)
+            open_and_close_qr_code(qr_code_file_name)
+            say("It will take sometime to process your payment.", lang)
+            while True:
+                if receivedPayments() == "True":
+                    say("Payment received of Rupees " + str(amount[1])[
+                        :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
+                        lang)
+                    time.sleep(3)
+                    save_transaction_code(transaction_code, product, amt)
+                    Lays()
+                    say(thankYouMessages(), lang)
+                    time.sleep(5)
+                    return "Vended"
+                    # break
+                else:
+                    print("No Payment Received")
+                    time.sleep(15)
 
-    else:
-        say("Didn't recognise your command, please say it again.", lang)
+        elif "keep quiet" in product:
+            say("shutting down..", lang)
+            time.sleep(3)
+            exit(0)
+
+        else:
+            say("Didn't recognise your command, please say it again.", lang)
 
 
 def voiceVendingMachine():
-    command = recognize_speech()
-    if "cadbury" in str(command).lower():
-        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=05.00&tn=To%20Vending%20Machine%20For%20Cadbury&cu=INR"
-        qr_code_file_name = "myUPIid(Cadbury).png"
-        generate_qr_code(myUPI, qr_code_file_name)
-        print("Recognized text:", command)
-        say("Please do the Payment of Cadbury.", lang1)
-        say(paymentMethodOptions(), lang1)
-        open_and_close_qr_code(qr_code_file_name)
-        say("It will take sometime to process your payment.", lang1)
-        print(receivedPayments())
-        while True:
-            if receivedPayments() == "Cadbury":
-                say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + "cadbury is being dispensed from the vending Machine. Please collect your cadbury",
-                    lang1)
-                time.sleep(3)
-                dairyMilk()
-                say(thankYouMessages(), lang1)
-                time.sleep(5)
-                # break
-                return "Vended"
-            else:
-                print("No Payment Received")
-                time.sleep(15)
+    transaction_code = generate_transaction_code()
 
-    elif "kitkat" in str(command).lower():
-        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=10.00&tn=To%20Vending%20Machine%20For%20kitkat&cu=INR"
-        qr_code_file_name = "myUPIid(kitkat).png"
-        generate_qr_code(myUPI, qr_code_file_name)
-        print("Recognized text:", command)
-        say("Please do the Payment of kitkat.", lang1)
-        say(paymentMethodOptions(), lang1)
-        open_and_close_qr_code(qr_code_file_name)
-        say("It will take sometime to process your payment.", lang1)
-        while True:
-            if receivedPayments() == "Kitkat":
-                say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
-                    lang1)
-                time.sleep(3)
-                Kitkat()
-                say(thankYouMessages(), lang1)
-                time.sleep(5)
-                # break
-                return "Vended"
-            else:
-                print("No Payment Received")
-                time.sleep(15)
+    if is_transaction_code_unique(transaction_code):
 
-    elif "kurkure" in str(command).lower():
-        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20kurkure&cu=INR"
-        qr_code_file_name = "myUPIid(kurkure).png"
-        generate_qr_code(myUPI, qr_code_file_name)
-        print("Recognized text:", command)
-        say("Please do the Payment of kurkure.", lang1)
-        say(paymentMethodOptions(), lang1)
-        open_and_close_qr_code(qr_code_file_name)
-        say("It will take sometime to process your payment.", lang1)
-        while True:
-            if receivedPayments() == True:
-                say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
-                    lang1)
-                time.sleep(3)
-                kurkure()
-                say(thankYouMessages(), lang1)
-                time.sleep(5)
-                # break
-                return "Vended"
-            else:
-                print("No Payment Received")
-                time.sleep(15)
+        command = recognize_speech()
+        if "cadbury" in str(command).lower():
+            myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=05.00&tn=To%20Vending%20Machine%20For%20Cadbury&cu=INR"
+            qr_code_file_name = "myUPIid(Cadbury).png"
+            generate_qr_code(myUPI, qr_code_file_name)
+            print("Recognized text:", command)
+            say("Please do the Payment of Cadbury.", lang1)
+            say(paymentMethodOptions(), lang1)
+            open_and_close_qr_code(qr_code_file_name)
+            say("It will take sometime to process your payment.", lang1)
+            print(receivedPayments())
+            while True:
+                if receivedPayments() == "Cadbury":
+                    product = "Cadbury"
+                    amt = float(amount[1])
+                    save_transaction_code(transaction_code, product, amt)
+                    say("Payment received of Rupees " + str(amount[1])[
+                                                        :-3] + " cadbury is being dispensed from the vending Machine. Please collect your cadbury",
+                        lang1)
+                    time.sleep(3)
+                    dairyMilk()
+                    say(thankYouMessages(), lang1)
+                    time.sleep(5)
+                    # break
+                    return "Vended"
+                else:
+                    print("No Payment Received")
+                    time.sleep(15)
 
-    elif "lays" in str(command).lower():
-        myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20Lays&cu=INR"
-        qr_code_file_name = "myUPIid(lays).png"
-        generate_qr_code(myUPI, qr_code_file_name)
-        print("Recognized text:", command)
-        say("Please do the Payment of Lays.", lang1)
-        say(paymentMethodOptions(), lang1)
-        open_and_close_qr_code(qr_code_file_name)
-        say("It will take sometime to process your payment.", lang1)
-        while True:
-            if receivedPayments() == True:
-                say("Payment received of Rupees " + str(amount[1])[
-                    :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
-                    lang1)
-                time.sleep(3)
-                Lays()
-                say(thankYouMessages(), lang1)
-                time.sleep(5)
-                # break
-                return "Vended"
-            else:
-                print("No Payment Received")
-                time.sleep(15)
+        elif "kitkat" in str(command).lower():
+            myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=10.00&tn=To%20Vending%20Machine%20For%20kitkat&cu=INR"
+            qr_code_file_name = "myUPIid(kitkat).png"
+            generate_qr_code(myUPI, qr_code_file_name)
+            print("Recognized text:", command)
+            say("Please do the Payment of kitkat.", lang1)
+            say(paymentMethodOptions(), lang1)
+            open_and_close_qr_code(qr_code_file_name)
+            say("It will take sometime to process your payment.", lang1)
+            while True:
+                if receivedPayments() == "Kitkat":
+                    product = "Kitkat"
+                    amt = float(amount[1])
+                    save_transaction_code(transaction_code, product, amt)
+                    say("Payment received of Rupees " + str(amount[1])[
+                                                        :-3] + ". Kitkat is being dispensed from the vending Machine. Please collect your Kitkat",
+                        lang1)
+                    time.sleep(3)
+                    Kitkat()
+                    say(thankYouMessages(), lang1)
+                    time.sleep(5)
+                    # break
+                    return "Vended"
+                else:
+                    print("No Payment Received")
+                    time.sleep(15)
 
-    elif "keep quiet" in command:
-        say("shutting down..", lang1)
-        time.sleep(3)
-        exit(0)
+        elif "kurkure" in str(command).lower():
+            myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20kurkure&cu=INR"
+            qr_code_file_name = "myUPIid(kurkure).png"
+            generate_qr_code(myUPI, qr_code_file_name)
+            print("Recognized text:", command)
+            say("Please do the Payment of kurkure.", lang1)
+            say(paymentMethodOptions(), lang1)
+            open_and_close_qr_code(qr_code_file_name)
+            say("It will take sometime to process your payment.", lang1)
+            while True:
+                if receivedPayments() == "True":
+                    product = "Kurkure"
+                    amt = float(amount[1])
+                    save_transaction_code(transaction_code, product, amt)
+                    say("Payment received of Rupees " + str(amount[1])[
+                                                        :-3] + ". Kurkure is being dispensed from the vending Machine. Please collect your kurkure",
+                        lang1)
+                    time.sleep(3)
+                    kurkure()
+                    say(thankYouMessages(), lang1)
+                    time.sleep(5)
+                    # break
+                    return "Vended"
+                else:
+                    print("No Payment Received")
+                    time.sleep(15)
 
-    else:
-        say("Didn't recognise your command, please say it again.", lang1)
+        elif "lays" in str(command).lower():
+            myUPI = "upi://pay?pa=benroman1712345@okicici&pn=Amit%20Chaurasiya&am=20.00&tn=To%20Vending%20Machine%20For%20Lays&cu=INR"
+            qr_code_file_name = "myUPIid(lays).png"
+            generate_qr_code(myUPI, qr_code_file_name)
+            print("Recognized text:", command)
+            say("Please do the Payment of Lays.", lang1)
+            say(paymentMethodOptions(), lang1)
+            open_and_close_qr_code(qr_code_file_name)
+            say("It will take sometime to process your payment.", lang1)
+            while True:
+                if receivedPayments() == "True":
+                    product = "Lays"
+                    amt = float(amount[1])
+                    save_transaction_code(transaction_code, product, amt)
+                    say("Payment received of Rupees " + str(amount[1])[
+                                                        :-3] + "Lays is being dispensed from the vending Machine. Please collect your Lays",
+                        lang1)
+                    time.sleep(3)
+                    Lays()
+                    say(thankYouMessages(), lang1)
+                    time.sleep(5)
+                    # break
+                    return "Vended"
+                else:
+                    print("No Payment Received")
+                    time.sleep(15)
+
+        elif "keep quiet" in command:
+            say("shutting down..", lang1)
+            time.sleep(3)
+            exit(0)
+
+        else:
+            say("Didn't recognise your command, please say it again.", lang1)
 
 
 global lang, lang1, inputMethod
